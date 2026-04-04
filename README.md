@@ -1,2 +1,0 @@
-# generator
-video to qr
