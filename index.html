@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Video to QR Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+<body style="font-family: Arial; text-align: center; padding: 30px;">
+
+  <h2>Upload Video → Get QR Code</h2>
+
+  <input type="file" id="videoFile" accept="video/*"><br><br>
+  <button onclick="uploadVideo()">Upload & Generate QR</button>
+
+  <p id="status"></p>
+  <br>
+  <canvas id="qrcode"></canvas>
+
+  <script>
+    const cloudName = "dkfj94uga";
+    const uploadPreset = "hellopuspa";
+
+    function uploadVideo() {
+      const file = document.getElementById("videoFile").files[0];
+      if (!file) return alert("Select a video first!");
+
+      document.getElementById("status").innerText = "Uploading...";
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", uploadPreset);
+
+      fetch(`https://api.cloudinary.com/v1_1/${cloudName}/video/upload`, {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        const videoUrl = data.secure_url;
+
+        document.getElementById("status").innerText = "QR Code Ready!";
+
+        QRCode.toCanvas(document.getElementById("qrcode"), videoUrl);
+      })
+      .catch(() => {
+        document.getElementById("status").innerText = "Upload failed!";
+      });
+    }
+  </script>
+
+</body>
+</html>
